@@ -1,0 +1,14 @@
+[package]
+name = "passgen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-rt = "2.8.0"
+sha2 = "0.10.6"
+rand = "0.8.5"
+
+migration = { path = "../database/migration" }
+entity = { path = "../database/entity" }
+common = { path = "../common" }
+lettre = { version = "0.10.2", features = ["native-tls"] }
