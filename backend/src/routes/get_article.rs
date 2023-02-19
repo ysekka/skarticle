@@ -15,8 +15,6 @@ use so::ColumnTrait;
 pub async fn get_article(app_state: aw::web::Data<stcState::State>, query: aw::web::Query<GetArticle>) -> Option<impl aw::Responder> {
     let query = query.into_inner();
 
-    println!("{:?}", "test");
-
     match query.article_uuid {
         Some(article_uuid) => {
             let article_query = entity::articles_table::Entity::find_by_id(article_uuid)
