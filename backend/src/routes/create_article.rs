@@ -29,30 +29,34 @@ pub async fn create_article(self_user: aw::web::ReqData<entity::users_table::Mod
 
     if let Ok(article) = insertion {
         if let Some(thumbnail) = thumbnail {
-            let article_uuid = article.article_uuid;
-            let thumbnail_path = std::path::Path::new(&app_state.public_directory)
-            .join("thumbnail")
-            .join(article_uuid.to_string());
+            if thumbnail.len() != 0 {
+                let article_uuid = article.article_uuid;
+                let thumbnail_path = std::path::Path::new(&app_state.public_directory)
+                .join("thumbnail")
+                .join(article_uuid.to_string());
 
-            if let Ok(mut file) = std::fs::File::create(&thumbnail_path) {
-                if let Ok(_) = file.write_all(&thumbnail) {
-                    let mut active_article = article.clone().into_active_model();
+                if let Ok(mut file) = std::fs::File::create(&thumbnail_path) {
+                    if let Ok(_) = file.write_all(&thumbnail) {
+                        let mut active_article = article.clone().into_active_model();
 
-                    active_article.article_thumbnail = so::ActiveValue::Set(format!("/public/thumbnail/{article_uuid}"));
+                        active_article.article_thumbnail = so::ActiveValue::Set(format!("/public/thumbnail/{article_uuid}"));
 
-                    let updation = active_article.update(&app_state.database_connection).await;
+                        let updation = active_article.update(&app_state.database_connection).await;
 
-                    if let Ok(article) = updation {
-                        return aw::HttpResponse::Ok().json(article)
+                        if let Ok(article) = updation {
+                            return aw::HttpResponse::Ok().json(article)
+                        }
+
                     }
 
+                    std::fs::remove_file(&thumbnail_path)
+                    .expect("Error occured during deletion of thumbnail path.");
                 }
 
-                std::fs::remove_file(&thumbnail_path)
-                .expect("Error occured during deletion of thumbnail path.");
+                return aw::HttpResponse::InternalServerError().finish()
             }
 
-            return aw::HttpResponse::InternalServerError().finish()
+            return aw::HttpResponse::BadRequest().finish()
         }
 
         return aw::HttpResponse::Ok().json(article)
