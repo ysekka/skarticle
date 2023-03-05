@@ -37,4 +37,5 @@ pub struct UpdateArticle {
     pub article_title: Option<String>,
     pub article_content: Option<String>,
     pub article_type: Option<soae::ArticleType>,
+    pub article_visibility: Option<bool>
 }
