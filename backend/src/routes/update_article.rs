@@ -34,6 +34,10 @@ pub async fn update_article(self_user: aw::web::ReqData<entity::users_table::Mod
         if let Some(article_type) = query.article_type {
             active_article.article_type = so::ActiveValue::Set(article_type)
         }
+        
+        if let Some(article_visibility) = query.article_visibility {
+            active_article.article_visibility = so::ActiveValue::Set(article_visibility)
+        }
 
         let updation = active_article.update(&app_state.database_connection).await;
 
